@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import BaseButton from './components/ui/button/BaseButton.vue'
-import BaseCalendarInput from './components/ui/calendar/BaseCalendarInput.vue'
+import { Button } from './components/ui/button'
+import { CalendarInput } from './components/ui/calendar'
+import { Card } from './components/ui/card'
 import { Toaster } from './components/ui/sonner'
 </script>
 
 <template>
   <Toaster />
-  <BaseCalendarInput form-label=""></BaseCalendarInput>
-  <BaseButton>Submit</BaseButton>
+  <Card>
+    <CalendarInput form-label=""></CalendarInput>
+    <Button>Submit</Button>
+  </Card>
 </template>
 
 <style scoped>

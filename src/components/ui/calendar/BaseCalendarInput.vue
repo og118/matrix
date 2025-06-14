@@ -14,7 +14,7 @@ import { computed, h, ref } from 'vue'
 import { z } from 'zod'
 import { cn } from '@/utils/shadUtils'
 import { Button } from '@/components/ui/button'
-import { BaseCalendar } from '@/components/ui/calendar'
+import { Calendar } from '@/components/ui/calendar'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { toast } from 'vue-sonner'
@@ -77,10 +77,10 @@ const onSubmit = handleSubmit((values) => {
             </FormControl>
           </PopoverTrigger>
           <PopoverContent class="w-auto p-0">
-            <BaseCalendar
+            <Calendar
               v-model:placeholder="placeholder"
               :model-value="value"
-              calendar-label="Date of birth"
+              calendar-label="formLabel"
               initial-focus
               :min-value="new CalendarDate(1900, 1, 1)"
               :max-value="today(getLocalTimeZone())"
