@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import BaseButton from './components/ui/button/BaseButton.vue'
-import BaseCalendar from './components/ui/calendar/BaseCalendar.vue'
+import BaseCalendarInput from './components/ui/calendar/BaseCalendarInput.vue'
+import { Toaster } from './components/ui/sonner'
 </script>
 
 <template>
-  <header>Hello World</header>
-
-  <main>
-    <BaseButton>Button</BaseButton>
-    <BaseCalendar></BaseCalendar>
-  </main>
+  <Toaster />
+  <BaseCalendarInput form-label=""></BaseCalendarInput>
+  <BaseButton>Submit</BaseButton>
 </template>
 
 <style scoped>
