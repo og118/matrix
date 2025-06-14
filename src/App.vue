@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { Button } from './components/ui/button'
-import { CalendarInput } from './components/ui/calendar'
-import { Card } from './components/ui/card'
+import HomePage from './pages/HomePage.vue'
 import { Toaster } from './components/ui/sonner'
 </script>
 
 <template>
   <Toaster />
-  <Card>
-    <CalendarInput form-label=""></CalendarInput>
-    <Button>Submit</Button>
-  </Card>
+  <HomePage />
 </template>
 
 <style scoped>
