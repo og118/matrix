@@ -1,0 +1,26 @@
+{
+  "name": "movies-books-search-api",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker API for searching movies (TMDB) and books (OpenLibrary)",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": [
+    "cloudflare",
+    "worker",
+    "api",
+    "movies",
+    "books",
+    "tmdb",
+    "openlibrary"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "wrangler": "^3.0.0"
+  }
+}
