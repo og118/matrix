@@ -1,9 +1,3 @@
 name = "movies-books-search-api"
 main = "src/index.ts"
 compatibility_date = "2023-12-01"
-
-[env.production]
-vars = { }
-
-# You'll need to set your TMDB API key as a secret:
-# wrangler secret put TMDB_API_KEY
