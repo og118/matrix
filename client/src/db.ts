@@ -15,10 +15,6 @@ export interface TrackedActivity {
   notes?: string
   description?: string
   isFavorite: boolean
-  // Additional metadata from search results
-  posterPath?: string // URL to poster or cover image
-  overview?: string // Description or summary
-  year?: string // Release or publish year
   createdAt: Date
   updatedAt: Date
 }
@@ -29,9 +25,9 @@ export class AppDatabase extends Dexie {
   constructor() {
     super('ActivityTrackerDB')
 
-    this.version(3).stores({
+    this.version(2).stores({
       tracked_activities:
-        '++id, mediaType, mediaId, status, rating, startDate, completedDate, posterPath, year, createdAt, updatedAt',
+        '++id, mediaType, mediaId, status, rating, startDate, completedDate, createdAt, updatedAt',
     })
 
     // Add hooks for automatic timestamps
