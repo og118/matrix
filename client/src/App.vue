@@ -5,10 +5,10 @@ import 'vue-sonner/style.css' // vue-sonner v2 requires this import
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background">
+  <div class="min-h-screen min-w-screen flex flex-col bg-background">
     <NavBar />
     <div class="flex-1 flex items-center justify-center mt-16">
-      <router-view></router-view>
+      <router-view />
     </div>
     <Toaster />
   </div>

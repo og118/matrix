@@ -214,9 +214,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col space-y-12 h-full gap-4">
+  <div class="flex flex-col space-y-12 h-full gap-4 w-full max-w-2xl mx-auto px-4">
     <form @submit="handleCreateActivity">
-      <Card class="w-[700px]">
+      <Card class="w-full">
         <CardHeader>
           <CardTitle>
             What did you watch or read today?
@@ -225,7 +225,7 @@ onMounted(() => {
         </CardHeader>
 
         <CardContent>
-          <div class="flex gap-2">
+          <div class="flex flex-col sm:flex-row gap-2">
             <div class="flex-1">
               <FormField name="activity" v-slot="{ field }">
                 <FormItem>
@@ -262,9 +262,7 @@ onMounted(() => {
                       >
                         <div class="flex items-start space-x-3">
                           <div v-if="result.source === 'tmdb'">
-                            <div
-                              class="flex-shrink-0 w-12 h-16 bg-gray-100 rounded overflow-hidden"
-                            >
+                            <div class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden">
                               <img
                                 v-if="result.posterUrl"
                                 :src="
@@ -285,7 +283,7 @@ onMounted(() => {
                               <!-- First Row: Type | Name -->
                               <div class="flex items-center space-x-2">
                                 <span
-                                  class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-800 capitalize"
+                                  class="inline-block px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground capitalize"
                                 >
                                   {{
                                     form.values.mediaType === 'tv-show'
@@ -299,15 +297,13 @@ onMounted(() => {
                               </div>
 
                               <!-- Second Row: Year -->
-                              <div class="mt-1 text-xs text-gray-500">
+                              <div class="mt-1 text-xs text-muted-foreground">
                                 {{ extractYear(result.releaseDate) }}
                               </div>
                             </div>
                           </div>
                           <div v-else-if="result.source === 'openlibrary'">
-                            <div
-                              class="flex-shrink-0 w-12 h-16 bg-gray-100 rounded overflow-hidden"
-                            >
+                            <div class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden">
                               <img
                                 v-if="result.coverUrl"
                                 :src="result.coverUrl"
@@ -328,7 +324,7 @@ onMounted(() => {
                               </div>
 
                               <!-- Second Row: Year -->
-                              <div class="mt-1 text-xs text-gray-500">
+                              <div class="mt-1 text-xs text-muted-foreground">
                                 {{ result.publishYear }}
                               </div>
                             </div>
@@ -364,15 +360,15 @@ onMounted(() => {
           <!-- Search status and results -->
         </CardContent>
 
-        <CardFooter class="flex justify-between px-6">
-          <Button class="w-[250px]" type="submit">Submit</Button>
-          <Button variant="outline" class="w-[250px]" type="button"> Cancel </Button>
+        <CardFooter class="flex flex-col sm:flex-row justify-between gap-4 px-6">
+          <Button class="w-full sm:w-[250px]" type="submit">Submit</Button>
+          <Button variant="secondary" class="w-full sm:w-[250px]" type="button"> Cancel </Button>
         </CardFooter>
       </Card>
     </form>
 
     <!-- Activities List -->
-    <Card class="w-[700px]">
+    <Card>
       <CardHeader>
         <CardTitle>Your Activities ({{ activities.length }})</CardTitle>
       </CardHeader>
@@ -391,7 +387,9 @@ onMounted(() => {
                 {{ activity.description || activity.mediaId }}
               </div>
               <div class="text-sm text-muted-foreground flex flex-wrap gap-2 sm:gap-4">
-                <span class="capitalize px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-800">
+                <span
+                  class="capitalize px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground"
+                >
                   {{ activity.mediaType === 'tv-show' ? 'TV Show' : activity.mediaType }}
                 </span>
                 <span class="capitalize">{{ activity.status.replace('_', ' ') }}</span>
@@ -410,7 +408,7 @@ onMounted(() => {
               class="ml-2"
               @click="handleDeleteActivity(activity.id)"
             >
-              <Trash2 color="black" />
+              <Trash2 class="text-foreground" />
             </Button>
           </div>
         </div>

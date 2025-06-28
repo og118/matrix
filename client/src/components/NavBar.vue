@@ -5,6 +5,18 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
+import { Button } from './ui/button'
+import { Moon } from 'lucide-vue-next'
+import { useColorMode } from '@vueuse/core'
+
+const mode = useColorMode({
+  attribute: 'theme',
+  modes: {
+    light: 'light',
+    dark: 'dark',
+    starryNight: 'starry-night',
+  },
+})
 </script>
 
 <template>
@@ -16,7 +28,10 @@ import {
             <NavigationMenuItem>
               <router-link to="/" custom v-slot="{ isActive, href, navigate }">
                 <NavigationMenuLink
-                  :class="['rounded-xl px-4', isActive ? 'text-black font-bold' : 'text-gray-600']"
+                  :class="[
+                    'rounded-xl px-4',
+                    isActive ? 'text-foreground font-bold' : 'text-muted-foreground',
+                  ]"
                   :href="href"
                   @click="navigate"
                 >
@@ -27,13 +42,24 @@ import {
             <NavigationMenuItem>
               <router-link to="/track" custom v-slot="{ isActive, href, navigate }">
                 <NavigationMenuLink
-                  :class="['rounded-xl px-4', isActive ? 'text-black font-bold' : 'text-gray-600']"
+                  :class="[
+                    'rounded-xl px-4',
+                    isActive ? 'text-foreground font-bold' : 'text-muted-foreground',
+                  ]"
                   :href="href"
                   @click="navigate"
                 >
                   Track
                 </NavigationMenuLink>
               </router-link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Button
+                class="bg-secondary hover:bg-secondary/80"
+                @click="mode = mode === 'dark' ? 'light' : 'dark'"
+              >
+                <Moon class="text-foreground hover:!text-background transition-colors" />
+              </Button>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -55,6 +81,6 @@ import {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: black;
+  background-color: hsl(var(--foreground));
 }
 </style>
