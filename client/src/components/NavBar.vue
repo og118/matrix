@@ -6,22 +6,20 @@ import {
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
 import { Button } from './ui/button'
-import { Moon } from 'lucide-vue-next'
+import { Moon, Sun } from 'lucide-vue-next'
 import { useColorMode } from '@vueuse/core'
 
 const mode = useColorMode({
-  attribute: 'theme',
   modes: {
     light: 'light',
     dark: 'dark',
-    starryNight: 'starry-night',
   },
 })
 </script>
 
 <template>
   <div class="w-full">
-    <div class="container flex h-14 max-w-screen-2xl items-center justify-center">
+    <div class="flex h-14 items-center justify-center">
       <div class="flex items-center justify-center">
         <NavigationMenu class="bg-secondary w-full rounded-xl">
           <NavigationMenuList>
@@ -55,10 +53,17 @@ const mode = useColorMode({
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Button
-                class="bg-secondary hover:bg-secondary/80"
+                class="group bg-secondary hover:bg-foreground"
                 @click="mode = mode === 'dark' ? 'light' : 'dark'"
               >
-                <Moon class="text-foreground hover:!text-background transition-colors" />
+                <Sun
+                  v-if="mode === 'dark'"
+                  class="h-[1.2rem] w-[1.2rem] text-foreground group-hover:text-background transition-colors"
+                />
+                <Moon
+                  v-else
+                  class="h-[1.2rem] w-[1.2rem] text-foreground group-hover:text-background transition-colors"
+                />
               </Button>
             </NavigationMenuItem>
           </NavigationMenuList>
