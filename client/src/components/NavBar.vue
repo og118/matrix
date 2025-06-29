@@ -9,12 +9,7 @@ import { Button } from './ui/button'
 import { Moon, Sun } from 'lucide-vue-next'
 import { useColorMode } from '@vueuse/core'
 
-const mode = useColorMode({
-  modes: {
-    light: 'light',
-    dark: 'dark',
-  },
-})
+const mode = useColorMode()
 </script>
 
 <template>
@@ -54,7 +49,7 @@ const mode = useColorMode({
             <NavigationMenuItem>
               <Button
                 class="group bg-secondary hover:bg-foreground"
-                @click="mode = mode === 'dark' ? 'light' : 'dark'"
+                @click="mode = mode === 'light' ? 'dark' : 'light'"
               >
                 <Sun
                   v-if="mode === 'dark'"
