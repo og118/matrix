@@ -1,19 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../pages/HomePage.vue'
+import ActivityPage from '@/pages/ActivityPage.vue'
+import TrackPage from '@/pages/TrackPage.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Activity',
-    component: {
-      template:
-        '<div class="flex items-center justify-center h-full pt-16"><h1 class="text-2xl">Activity Page Coming Soon</h1></div>',
-    },
+    component: ActivityPage,
   },
   {
     path: '/track',
     name: 'Track',
-    component: HomePage,
+    default: true,
+    component: TrackPage,
   },
 ]
 

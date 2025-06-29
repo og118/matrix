@@ -4,7 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './routers'
-import { initializeDatabase } from './db'
+import { initializeDatabase } from './database/db'
 
 const app = createApp(App)
 
