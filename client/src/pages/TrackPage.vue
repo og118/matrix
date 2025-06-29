@@ -2,12 +2,6 @@
 import { type MovieResult, type BookResult, search } from '@/api/search'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
 import { FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
@@ -20,7 +14,7 @@ import {
 import { useActivityStore } from '@/store/activityStore'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { toast } from 'vue-sonner'
 import z from 'zod'
 
@@ -29,6 +23,7 @@ const { addActivity, loadActivities } = useActivityStore()
 const searchResults = ref<(MovieResult | BookResult)[]>([])
 const isSearching = ref(false)
 const searchTimeout = ref<number | null>(null)
+const dropdownContainer = ref<HTMLElement | null>(null)
 
 const formSchema = toTypedSchema(
   z.object({
@@ -125,6 +120,30 @@ const selectSearchResult = (result: any) => {
   searchResults.value = []
 }
 
+// Close dropdown when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownContainer.value && !dropdownContainer.value.contains(event.target as Node)) {
+    searchResults.value = []
+  }
+}
+
+// Close dropdown when pressing Escape
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    searchResults.value = []
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeyDown)
+})
+
 const handleCreateActivity = form.handleSubmit(async () => {
   // Get the current form values
   const newActivity = form.values.activity
@@ -188,45 +207,42 @@ const handleCreateActivity = form.handleSubmit(async () => {
           <div class="flex-1">
             <FormField name="activity" v-slot="{ field }">
               <FormItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div class="relative">
-                      <Input
-                        v-bind="field"
-                        placeholder="Enter the title..."
-                        :class="{ 'pr-8': isSearching }"
-                      />
-                      <div
-                        v-if="isSearching"
-                        class="absolute right-3 top-2.5 animate-spin"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent :class="{ hidden: searchResults.length === 0 }">
-                    <DropdownMenuItem
+                <div class="relative" ref="dropdownContainer">
+                  <Input
+                    v-bind="field"
+                    placeholder="Enter the title..."
+                    :class="{ 'pr-8': isSearching }"
+                  />
+                  <div v-if="isSearching" class="absolute right-3 top-2.5 animate-spin">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                    </svg>
+                  </div>
+
+                  <!-- Search Results Dropdown -->
+                  <div
+                    v-if="searchResults.length > 0"
+                    class="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md max-h-80 overflow-y-auto"
+                  >
+                    <div
                       v-for="(result, index) in searchResults"
                       :key="index"
                       @click="selectSearchResult(result)"
+                      class="flex items-start space-x-3 p-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
                     >
                       <div class="flex items-start space-x-3">
                         <div v-if="result.source === 'tmdb'">
-                          <div
-                            class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden"
-                          >
+                          <div class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden">
                             <img
                               v-if="result.posterUrl"
                               :src="
@@ -250,8 +266,8 @@ const handleCreateActivity = form.handleSubmit(async () => {
                                 class="inline-block px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground capitalize"
                               >
                                 {{
-                                  form.values.mediaType === "tv-show"
-                                    ? "TV Show"
+                                  form.values.mediaType === 'tv-show'
+                                    ? 'TV Show'
                                     : form.values.mediaType
                                 }}
                               </span>
@@ -267,9 +283,7 @@ const handleCreateActivity = form.handleSubmit(async () => {
                           </div>
                         </div>
                         <div v-else-if="result.source === 'openlibrary'">
-                          <div
-                            class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden"
-                          >
+                          <div class="flex-shrink-0 w-12 h-16 bg-muted rounded overflow-hidden">
                             <img
                               v-if="result.coverUrl"
                               :src="result.coverUrl"
@@ -296,9 +310,9 @@ const handleCreateActivity = form.handleSubmit(async () => {
                           </div>
                         </div>
                       </div>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </div>
+                  </div>
+                </div>
               </FormItem>
             </FormField>
           </div>
@@ -328,9 +342,7 @@ const handleCreateActivity = form.handleSubmit(async () => {
 
       <CardFooter class="flex flex-col sm:flex-row justify-between gap-4 px-6">
         <Button class="w-full sm:w-[250px]" type="submit">Submit</Button>
-        <Button variant="secondary" class="w-full sm:w-[250px]" type="button">
-          Cancel
-        </Button>
+        <Button variant="secondary" class="w-full sm:w-[250px]" type="button"> Cancel </Button>
       </CardFooter>
     </Card>
   </form>
