@@ -14,7 +14,7 @@ const mode = useColorMode()
 
 <template>
   <div class="w-full">
-    <div class="flex h-14 items-center justify-center">
+    <div class="flex h-[5vh] items-center justify-center">
       <div class="flex items-center justify-center">
         <NavigationMenu class="bg-secondary w-full rounded-xl">
           <NavigationMenuList>

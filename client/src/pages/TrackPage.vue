@@ -8,10 +8,11 @@ import { useActivityStore } from '@/store/activityStore'
 import { Search, Loader2 } from 'lucide-vue-next'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import z from 'zod'
 import { useMotion } from '@vueuse/motion'
+import { placeholder } from '@/utils/placeholdImage'
 
 const { addActivity, loadActivities } = useActivityStore()
 
@@ -19,17 +20,18 @@ const searchResults = ref<(MovieResult | BookResult)[]>([])
 const isSearching = ref(false)
 const searchTimeout = ref<number | null>(null)
 const hasSearchedOnce = ref(false) // Track if user has searched at least once
+const hasSearchResults = computed(() => searchResults.value.length > 0)
 
 // Motion setup
 const searchBarRef = ref<HTMLDivElement>()
 const { apply } = useMotion(searchBarRef, {
   initial: {
-    y: 0,
+    y: '42.5vh',
     transition: { duration: 0 },
   },
   up: {
-    y: -500,
-    transition: { duration: 700, ease: 'easeInOut' },
+    y: '2.5vh',
+    transition: { duration: 1000, ease: 'easeInOut' },
   },
 })
 
@@ -93,6 +95,11 @@ const extractYear = (dateString: string): string => {
   // Handle both YYYY-MM-DD format and other possible date formats
   const match = dateString.match(/(\d{4})/)
   return match ? match[1] : 'Unknown'
+}
+
+// Generate responsive placeholder dimensions
+const getPlaceholderDimensions = () => {
+  return { width: 96, height: 128 }
 }
 
 // Watch for form value changes to trigger search
@@ -175,90 +182,113 @@ const handleCreateActivity = form.handleSubmit(async () => {
 })
 </script>
 <template>
-  <div ref="searchBarRef" class="w-full h-full">
-    <form @submit="handleCreateActivity" class="flex justify-center w-full h-full">
-      <FormField name="activity" v-slot="{ field }">
-        <FormItem class="w-1/2">
-          <div class="flex flex-row items-center relative">
-            <Input
-              v-bind="field"
-              placeholder="What's on your mind?"
-              @keydown="handleInputKeyDown"
-              class="p-8 text-foreground border border-input rounded-xl"
-              style="font-size: 1.5rem"
-            />
-            <div v-if="isSearching" class="absolute right-4 animate-spin text-muted-foreground">
-              <Loader2 :size="20" />
+  <div class="flex flex-col flex-1 items-center justify-center">
+    <div ref="searchBarRef">
+      <form @submit="handleCreateActivity" class="flex flex-row justify-center">
+        <FormField name="activity" v-slot="{ field }">
+          <FormItem>
+            <div class="flex flex-row items-center relative">
+              <Input
+                v-bind="field"
+                placeholder="What's on your mind?"
+                @keydown="handleInputKeyDown"
+                class="px-8 text-foreground border border-input rounded-xl w-[50vw] h-[5vh]"
+                style="font-size: 1.5rem"
+              />
+              <div v-if="isSearching" class="absolute right-4 animate-spin text-muted-foreground">
+                <Loader2 :size="20" />
+              </div>
+              <div v-else class="absolute right-4 text-muted-foreground">
+                <Search :size="20" />
+              </div>
             </div>
-            <div v-else class="absolute right-4 text-muted-foreground">
-              <Search :size="20" />
-            </div>
-          </div>
-        </FormItem>
-      </FormField>
-    </form>
-
+          </FormItem>
+        </FormField>
+      </form>
+    </div>
     <!-- Search Results Section -->
-    <!-- <div
-      v-if="hasSearchResults"
-      v-motion
-      :initial="{ opacity: 0, y: 50 }"
-      :animate="{ opacity: 1, y: 0 }"
-      :transition="{ duration: 600, delay: 200, ease: 'easeOut' }"
-      class="mt-8 px-4"
-    >
-      <div class="max-w-2xl mx-auto">
-        <h3
-          v-motion
-          :initial="{ opacity: 0, x: -20 }"
-          :animate="{ opacity: 1, x: 0 }"
-          :transition="{ duration: 500, delay: 400 }"
-          class="text-lg font-semibold text-foreground mb-4"
+    <div class="flex flex-1 w-[50vw] justify-start">
+      <div
+        v-if="hasSearchResults"
+        v-motion
+        :initial="{ opacity: 0, y: '2.5vh' }"
+        :enter="{ opacity: 1, y: '2.5vh', transition: { duration: 500, delay: 300 } }"
+      >
+        <div
+          v-for="(result, idx) in searchResults"
+          :key="idx"
+          class="flex items-center p-4 hover:bg-muted/50 transition-colors"
         >
-          Search Results
-        </h3>
-        <div class="space-y-3">
-          <div
-            v-for="(result, index) in searchResults"
-            :key="result.id"
-            v-motion
-            :initial="{ opacity: 0, x: -30, scale: 0.9 }"
-            :animate="{ opacity: 1, x: 0, scale: 1 }"
-            :transition="{
-              duration: 500,
-              delay: 500 + index * 100,
-              ease: 'easeOut',
-              type: 'spring',
-              stiffness: 100,
-            }"
-            @click="selectSearchResult(result)"
-            class="flex items-center gap-3 p-3 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors"
-          >
-            <div class="flex-shrink-0 w-12 h-16 bg-muted-foreground/20 rounded overflow-hidden">
+          <!-- Book Result -->
+          <div v-if="result.source === 'openlibrary'" class="flex items-center w-full">
+            <div
+              class="w-16 h-24 sm:w-20 sm:h-28 md:w-24 md:h-32 bg-muted-foreground rounded overflow-hidden mr-4 flex-shrink-0"
+            >
               <img
-                v-if="result.poster_path || result.image"
-                :src="`https://image.tmdb.org/t/p/w92${result.poster_path || result.image}`"
-                :alt="result.title || result.name"
+                v-if="result.title"
+                :src="
+                  result.coverUrl ||
+                  placeholder(
+                    getPlaceholderDimensions().width,
+                    getPlaceholderDimensions().height,
+                    result.title,
+                  )
+                "
+                :alt="result.title"
                 class="w-full h-full object-cover"
               />
-              <div v-else class="w-full h-full flex items-center justify-center">
-                <Search :size="16" class="text-muted-foreground" />
-              </div>
             </div>
             <div class="flex-1 min-w-0">
               <h4 class="font-medium text-foreground truncate">
-                {{ result.title || result.name }}
+                {{ result.title }}
               </h4>
               <p class="text-sm text-muted-foreground truncate">
-                {{ extractYear(result.release_date || result.first_air_date || '') }}
+                {{ result.publishYear }}
               </p>
-              <p v-if="result.overview" class="text-sm text-muted-foreground mt-1 line-clamp-2">
-                {{ result.overview }}
+              <p v-if="result.authors" class="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {{ result.authors.toString() }}
               </p>
             </div>
           </div>
+          <!-- Movie Result -->
+          <div v-if="result.source === 'tmdb'" class="flex items-center w-full">
+            <div
+              class="w-16 h-24 sm:w-20 sm:h-28 md:w-24 md:h-32 bg-muted-foreground rounded overflow-hidden mr-4 flex-shrink-0"
+            >
+              <img
+                v-if="result.title"
+                :src="
+                  result.posterUrl ||
+                  placeholder(
+                    getPlaceholderDimensions().width,
+                    getPlaceholderDimensions().height,
+                    result.title,
+                  )
+                "
+                :alt="result.title"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="flex-1 min-w-0 px-5">
+              <h4 class="font-medium text-foreground truncate">
+                {{ result.title }}
+              </h4>
+              <p class="text-sm text-muted-foreground truncate">
+                {{ extractYear(result.releaseDate) }}
+              </p>
+              <p v-if="result.rating" class="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {{ result.rating }} / 10
+              </p>
+            </div>
+          </div>
+          <!-- Horizontal separator line (except for last item) -->
+          <div
+            v-if="idx < searchResults.length - 1"
+            class="absolute left-4 right-4 h-px bg-border"
+            :style="{ top: '100%' }"
+          ></div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>

@@ -7,7 +7,7 @@ import 'vue-sonner/style.css' // vue-sonner v2 requires this import
 <template>
   <div class="min-h-screen min-w-screen flex flex-col bg-background">
     <NavBar />
-    <div class="flex-1 flex items-center justify-center mt-16">
+    <div class="flex-1 flex flex-col">
       <router-view />
     </div>
     <Toaster />
